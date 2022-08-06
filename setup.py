@@ -8,20 +8,20 @@
 
 import os
 from setuptools import setup, find_packages, dist
-import importlib
+from importlib.util import find_spec
 from pkg_resources import parse_version
 import subprocess
 import warnings
 
 TORCH_MIN_VER = '1.5.0'
-TORCH_MAX_VER = '1.11.0'
+TORCH_MAX_VER = '1.13.0'
 CYTHON_MIN_VER = '0.29.20'
 INCLUDE_EXPERIMENTAL = os.getenv('KAOLIN_INSTALL_EXPERIMENTAL') is not None
 IGNORE_TORCH_VER = os.getenv('IGNORE_TORCH_VER') is not None
 
 # Module required before installation
 # trying to install it ahead turned out to be too unstable.
-torch_spec = importlib.util.find_spec("torch")
+torch_spec = find_spec("torch")
 if torch_spec is None:
     raise ImportError(
         f"Kaolin requires PyTorch >={TORCH_MIN_VER}, <={TORCH_MAX_VER}, "
@@ -47,7 +47,7 @@ else:
 
 missing_modules = []
 
-cython_spec = importlib.util.find_spec("cython")
+cython_spec = find_spec("cython")
 if cython_spec is None:
     warnings.warn(
         f"Kaolin requires cython == {CYTHON_MIN_VER}, "
@@ -60,10 +60,10 @@ else:
     import Cython
     cython_ver = parse_version(Cython.__version__)
     if cython_ver != parse_version('0.29.20'):
-        raise warnings.warn('Kaolin requires cython == 0.29.20, '
+        warnings.warn('Kaolin requires cython == 0.29.20, '
                             f'but found version {Cython.__version__} instead.')
 
-numpy_spec = importlib.util.find_spec("numpy")
+numpy_spec = find_spec("numpy")
 
 if numpy_spec is None:
     warnings.warn(
@@ -74,14 +74,14 @@ if numpy_spec is None:
 
 dist.Distribution().fetch_build_eggs(missing_modules)
 
-cython_spec = importlib.util.find_spec("cython")
+cython_spec = find_spec("cython")
 if cython_spec is None:
     raise ImportError(
         f"Kaolin requires cython == {CYTHON_MIN_VER} "
         "but couldn't find or install it."
     )
 
-numpy_spec = importlib.util.find_spec("numpy")
+numpy_spec = find_spec("numpy")
 if numpy_spec is None:
     raise ImportError(
         f"Kaolin requires numpy but couldn't find or install it."
